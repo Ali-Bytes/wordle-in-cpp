@@ -6,9 +6,12 @@
 
 using namespace constants;
 
-void displayBoard(std::string_view wordsBoard[]){
+void displayBoard(std::string_view board[][NUM_OF_ATTEMPTS]){
     for(int i = 0; i < WORD_LENGTH; i++){
-        std::cout << wordsBoard[i] << '\n';
+        for(int j = 0; j < NUM_OF_ATTEMPTS; j++){
+            std::cout << board[i][j];
+        }
+        std::cout << '\n';
     }
 }
 
