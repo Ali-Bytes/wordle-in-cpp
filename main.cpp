@@ -4,10 +4,10 @@
 
 #include "constants.h"
 
-using namespace constants;
+namespace Const = constants;
 
 
-void displayBoard(std::string_view board[][NUM_OF_ATTEMPTS]);
+void displayBoard(std::string_view board[][Const::NUM_OF_ATTEMPTS]);
 std::string getInput();
 void parseInput(std::string_view input);
 int* checkAttempt(std::string_view attempt, std::string_view word);
@@ -19,16 +19,16 @@ int main(){
     std::string_view input = getInput();
     parseInput(input);
     int* map = checkAttempt(input, word);
-    for(int i = 0; i<WORD_LENGTH; i++){
+    for(int i = 0; i<Const::WORD_LENGTH; i++){
         std::cout << map[i] << "\n";
     }
 
     return 0;
 }
 
-void displayBoard(std::string_view board[][NUM_OF_ATTEMPTS]){
-    for(int i = 0; i < WORD_LENGTH; i++){
-        for(int j = 0; j < NUM_OF_ATTEMPTS; j++){
+void displayBoard(std::string_view board[][Const::NUM_OF_ATTEMPTS]){
+    for(int i = 0; i < Const::WORD_LENGTH; i++){
+        for(int j = 0; j < Const::NUM_OF_ATTEMPTS; j++){
             std::cout << board[i][j];
         }
         std::cout << '\n';
@@ -45,7 +45,7 @@ void parseInput(std::string_view input){
     int lo = 1;
     int hi = 5;
 
-    if(input.size() != WORD_LENGTH){
+    if(input.size() != Const::WORD_LENGTH){
         std::cout << "inputSize is invalid. Please, enter an input of length=" << WORD_LENGTH << ".\n";
     }
 
@@ -61,8 +61,8 @@ void parseInput(std::string_view input){
 }
 
 int* checkAttempt(std::string_view attempt, std::string_view word){
-    static int map[WORD_LENGTH] {}; // zero-initiliazation
-    for(int i = 0; i < WORD_LENGTH; i++){
+    static int map[Const::WORD_LENGTH] {}; // zero-initiliazation
+    for(int i = 0; i < Const::WORD_LENGTH; i++){
         char c = attempt[i];
         if(word.find(c) == std::string::npos)
             map[i] = 0;
