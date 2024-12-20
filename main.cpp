@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 
 #include "constants.h"
 
