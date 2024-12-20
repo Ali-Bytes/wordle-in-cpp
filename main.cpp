@@ -1,34 +1,43 @@
 #include <iostream>
-#include <string>
 #include <algorithm>
 
 #include "constants.h"
 
-namespace Const = constants;
+namespace C = constants;
 
-
-void displayBoard(std::string_view board[][Const::NUM_OF_ATTEMPTS]);
+class guessStore;
+enum class ATTEMPT_OUTCOMES;
+void displayBoard(std::string_view board[][C::NUM_OF_ATTEMPTS]);
 std::string getInput();
 void parseInput(std::string_view input);
 int* checkAttempt(std::string_view attempt, std::string_view word);
 
+class guessStore{
+    std::string attempts[C::NUM_OF_ATTEMPTS];
+};
+
+enum class ATTEMPT_OUTCOMES{
+    NOT_IN_WORD = 0,
+    IN_WORD_WRONG_SPOT = 1,
+    IN_WORD_RIGHT_SPOT = 2
+};
+
 int main(){
     std::string word {"arise"};
 
-    std::cout << "\n";
     std::string_view input = getInput();
     parseInput(input);
     int* map = checkAttempt(input, word);
-    for(int i = 0; i<Const::WORD_LENGTH; i++){
+    for(int i = 0; i < C::WORD_LENGTH; i++){
         std::cout << map[i] << "\n";
     }
-
+            
     return 0;
 }
 
-void displayBoard(std::string_view board[][Const::NUM_OF_ATTEMPTS]){
-    for(int i = 0; i < Const::WORD_LENGTH; i++){
-        for(int j = 0; j < Const::NUM_OF_ATTEMPTS; j++){
+void displayBoard(std::string_view board[][C::NUM_OF_ATTEMPTS]){
+    for(int i = 0; i < C::WORD_LENGTH; i++){
+        for(int j = 0; j < C::NUM_OF_ATTEMPTS; j++){
             std::cout << board[i][j];
         }
         std::cout << '\n';
@@ -45,8 +54,8 @@ void parseInput(std::string_view input){
     int lo = 1;
     int hi = 5;
 
-    if(input.size() != Const::WORD_LENGTH){
-        std::cout << "inputSize is invalid. Please, enter an input of length=" << WORD_LENGTH << ".\n";
+    if(input.size() != C::WORD_LENGTH){
+        std::cout << "inputSize is invalid. Please, enter an input of length=" << C::WORD_LENGTH << ".\n";
     }
 
     lo = 97;
@@ -61,8 +70,8 @@ void parseInput(std::string_view input){
 }
 
 int* checkAttempt(std::string_view attempt, std::string_view word){
-    static int map[Const::WORD_LENGTH] {}; // zero-initiliazation
-    for(int i = 0; i < Const::WORD_LENGTH; i++){
+    static int map[C::WORD_LENGTH] {}; // zero-initiliazation
+    for(int i = 0; i < C::WORD_LENGTH; i++){
         char c = attempt[i];
         if(word.find(c) == std::string::npos)
             map[i] = 0;
