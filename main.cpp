@@ -3,6 +3,7 @@
 #include <cctype>
 #include <string>
 #include <string_view>
+#include <cstring>
 
 #include "constants.h"
 
@@ -22,12 +23,30 @@ enum class ATTEMPT_OUTCOMES{
 };
 
 int main(){
-    std::string_view word { "arise" };
+    std::cout << "Welcome to a Wordle clone!\n";
 
-    std::string_view input { getInput("Enter a word: ") };
-    parseInput(input);
-    int* map = checkAttempt(input, word);
-    displayGameState(input, map);
+    const std::string WORD { "arise" };
+    int current = 1;
+    while(current < C::NUM_OF_ATTEMPTS){
+        std::string_view promptPhrase { "\nEnter a word: " };
+
+        std::string input { getInput(promptPhrase) };
+        parseInput(input);
+
+        int* map = checkAttempt(input, WORD);
+        displayWordValidity(input, map);
+
+        // stop game if latest guess was right
+        if(strcmp(WORD.c_str(), input.c_str()) == 0){
+            std::cout << "\n\nGood job!" << "\n";
+            return 0;
+        }
+
+        current++;
+        std::cout << "\n";
+    }
+
+    std::cout << "\n\nBetter luck next time!" << "\n";
 }
 
 std::string getInput(std::string_view prompt){
