@@ -26,6 +26,7 @@ int main(){
     std::cout << "Welcome to a Wordle clone!\n";
 
     const std::string WORD { "arise" };
+    
     int current = 1;
     while(current < C::NUM_OF_ATTEMPTS){
         std::string_view promptPhrase { "\nEnter a word: " };
@@ -80,12 +81,12 @@ int* checkAttempt(std::string_view attempt, std::string_view word){
 
     for(int i = 0; i < C::WORD_LENGTH; i++){
         char c = attempt[i];
-        if(word.find(c) == std::string::npos)
-            map[i] = 0;
-        else if(word.find(c) != attempt.find(c) && word.find(c) != std::string::npos)
+        if(attempt[i] == word[i])
+            map[i] = 2;
+        else if(word.find(c) != std::string::npos)
             map[i] = 1;
         else
-            map[i] = 2;
+            map[i] = 0;
     }
     return map;
 }
