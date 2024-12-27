@@ -6,6 +6,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <array>
+#include <ios>
+#include <limits>
 
 #include "constants.h"
 #include "words.h"
@@ -17,9 +19,10 @@ namespace W = words;
 namespace A = answers;
 
 enum class ATTEMPT_OUTCOMES;
+void waitForInput();
 std::string_view getRandomWord();
 std::string getInput(std::string_view);
-void parseInput(std::string_view);
+bool parseInput(std::string_view);
 int* checkAttempt(std::string_view, std::string_view);
 void displayWordValidity(std::string_view, int[]);
 
@@ -29,33 +32,29 @@ enum class ATTEMPT_OUTCOMES{
     IN_WORD_RIGHT_SPOT = 2
 };
 
-std::string_view getRandomWord(){
-    srand(time(0)); // give new seed (here it is the current time)
-    
-    int numOfElements = sizeof(W::WORDS_S) / sizeof(*W::WORDS_S);
-    int r_int = std::rand() % numOfElements;
-
-    return W::WORDS_S[r_int];
-}
-
 int main(){
     std::cout << "Welcome to a Wordle clone!\n";
+    std::cout << "2=Word is in the right place.\n1=Character is in the word, but in the wrong place.\n0=Character is not in the word.\n";
 
     const std::string WORD { getRandomWord() };
 
     int current = 1;
-    while(current < C::NUM_OF_ATTEMPTS){
+    while(current <= C::NUM_OF_ATTEMPTS){
         std::string_view promptPhrase { "\nEnter a word: " };
 
         std::string input { getInput(promptPhrase) };
-        parseInput(input);
+        
+        if(!parseInput(input))
+            continue;
 
         int* map = checkAttempt(input, WORD);
+
         displayWordValidity(input, map);
 
         // stop game if latest guess was right
         if(strcmp(WORD.c_str(), input.c_str()) == 0){
-            std::cout << "\n\nGood job!" << "\n";
+            std::cout << "\n\n\nGood job! The word is indeed " << WORD << ".\n";
+            waitForInput();
             return 0;
         }
 
@@ -63,7 +62,13 @@ int main(){
         std::cout << "\n";
     }
 
-    std::cout << "\n\nBetter luck next time!" << "\n";
+    std::cout << "\n\n\nBetter luck next time! The word was " << WORD << ".\n";
+}
+
+void waitForInput(){
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n'); //wait for newline
+    std::cout << "\nPress enter to terminate.\n";
+    std::cin.get();
 }
 
 std::string getInput(std::string_view prompt){
@@ -74,10 +79,10 @@ std::string getInput(std::string_view prompt){
     return input;
 }
 
-void parseInput(std::string_view input){
+bool parseInput(std::string_view input){
     if(input.size() != C::WORD_LENGTH){
         std::cout << "inputSize is invalid. Please, enter an input of length=" << C::WORD_LENGTH << ".\n";
-        return;
+        return false;
     }
 
     const int lo = C::LOWER_CASE_A_ASCII;
@@ -87,9 +92,33 @@ void parseInput(std::string_view input){
         // std::clamp returns first arg if it is within bounds
         if(charToInt != std::clamp(charToInt, lo, hi)){
             std::cout << "Invalid character found in your input: " << c << ".\n";
-            return;
+            return false;
         }
     }
+
+    for(std::string word : A::POSSIBLE_ANSWERS){
+        if(input.compare(word) == 0){
+            return true;
+        }
+    }
+
+    for(std::string word : W::WORDS_S){
+        if(input.compare(word) == 0){
+            return true;
+        }
+    }
+
+    std::cout << "Word is not valid (i.e. not in the answers list nor in the allowed wordle list.\n";
+    return false;
+}
+
+std::string_view getRandomWord(){
+    srand(time(0)); // give new seed (here it is the current time)
+    
+    int numOfElements = sizeof(W::WORDS_S) / sizeof(*W::WORDS_S);
+    int r_int = std::rand() % numOfElements;
+
+    return W::WORDS_S[r_int];
 }
 
 int* checkAttempt(std::string_view attempt, std::string_view word){
@@ -97,6 +126,7 @@ int* checkAttempt(std::string_view attempt, std::string_view word){
 
     for(int i = 0; i < C::WORD_LENGTH; i++){
         char c = attempt[i];
+        // this order is the right one
         if(attempt[i] == word[i])
             map[i] = 2;
         else if(word.find(c) != std::string::npos)
@@ -104,11 +134,18 @@ int* checkAttempt(std::string_view attempt, std::string_view word){
         else
             map[i] = 0;
     }
+    
     return map;
 }
 
 void displayWordValidity(std::string_view attempt, int map[]){
+    std::cout << "\n";
     for(int i = 0; i < C::WORD_LENGTH; i++){
-        std::cout << attempt[i] << " (" << map[i] << ") ";
+        std::cout << attempt[i] << "  ";
+    }
+
+    std::cout << "\n";
+    for(int i = 0; i < C::WORD_LENGTH; i++){
+        std::cout << map[i] << "  ";
     }
 }
